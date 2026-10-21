@@ -22,6 +22,7 @@ import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as OrderOrderIdRouteImport } from './routes/order.$orderId'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
+import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -88,6 +89,11 @@ const ShopSlugRoute = ShopSlugRouteImport.update({
   path: '/shop/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
+  id: '/$orderId',
+  path: '/$orderId',
+  getParentRoute: () => AdminOrdersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -98,11 +104,12 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/track-order': typeof TrackOrderRoute
-  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/shop/': typeof ShopIndexRoute
+  '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -112,11 +119,12 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/track-order': typeof TrackOrderRoute
-  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/admin': typeof AdminIndexRoute
   '/shop': typeof ShopIndexRoute
+  '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -128,11 +136,12 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/how-it-works': typeof HowItWorksRoute
   '/track-order': typeof TrackOrderRoute
-  '/admin/orders': typeof AdminOrdersRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/order/$orderId': typeof OrderOrderIdRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/shop/': typeof ShopIndexRoute
+  '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/admin/'
     | '/shop/'
+    | '/admin/orders/$orderId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/admin'
     | '/shop'
+    | '/admin/orders/$orderId'
   id:
     | '__root__'
     | '/'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/admin/'
     | '/shop/'
+    | '/admin/orders/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -288,16 +300,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/orders/$orderId': {
+      id: '/admin/orders/$orderId'
+      path: '/$orderId'
+      fullPath: '/admin/orders/$orderId'
+      preLoaderRoute: typeof AdminOrdersOrderIdRouteImport
+      parentRoute: typeof AdminOrdersRoute
+    }
   }
 }
 
+interface AdminOrdersRouteChildren {
+  AdminOrdersOrderIdRoute: typeof AdminOrdersOrderIdRoute
+}
+
+const AdminOrdersRouteChildren: AdminOrdersRouteChildren = {
+  AdminOrdersOrderIdRoute: AdminOrdersOrderIdRoute,
+}
+
+const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
+  AdminOrdersRouteChildren,
+)
+
 interface AdminRouteChildren {
-  AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminOrdersRoute: AdminOrdersRoute,
+  AdminOrdersRoute: AdminOrdersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }
 

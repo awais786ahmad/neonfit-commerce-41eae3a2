@@ -18,8 +18,12 @@ import {
   type SizeTier,
 } from "./neon/catalog";
 import { allTemplates } from "./neon/templates";
+import { useOrders } from "./store";
 import type { NeonDesign, Order, PaymentStatus } from "./neon/types";
 import { createStore, designStore, orderStore } from "./store";
+
+// Admin pages read the order list through this module
+export { useOrders };
 
 /* ================= Admin-managed catalog =================
  * The admin panel owns the options customers see in the editor (Story F).
