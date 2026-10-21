@@ -11,7 +11,7 @@ import { NeonCanvas } from "@/components/NeonCanvas";
 import { PageFade } from "@/components/Reveal";
 import { getTier } from "@/lib/neon/catalog";
 import { orderId } from "@/lib/neon/cart";
-import { COUPON_CODES, formatPrice, shippingFor } from "@/lib/neon/pricing";
+import { couponPercent, formatPrice, shippingFor } from "@/lib/neon/pricing";
 import { cartStore, clearCart, couponStore, getCoupon, placeOrder, useCart, useCoupon } from "@/lib/store";
 import type { Order, OrderCustomer } from "@/lib/neon/types";
 import { cn } from "@/lib/utils";
@@ -53,7 +53,7 @@ function Checkout() {
   const placedRef = useRef(false);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const discountPct = coupon ? (COUPON_CODES[coupon] ?? 0) : 0;
+  const discountPct = couponPercent(coupon);
   const discount = Math.round(subtotal * discountPct);
   const shipping = shippingFor(subtotal - discount);
   const total = subtotal - discount + shipping;

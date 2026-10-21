@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { PageFade } from "@/components/Reveal";
-import { formatPrice, FREE_SHIPPING_THRESHOLD, SHIPPING_FLAT } from "@/lib/neon/pricing";
+import { formatPrice, freeShippingThreshold, shippingFlat } from "@/lib/neon/pricing";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({
@@ -73,7 +73,7 @@ const FAQ_GROUPS: { title: string; items: { q: string; a: string }[] }[] = [
     items: [
       {
         q: "How much does shipping cost?",
-        a: `Shipping is a flat ${formatPrice(SHIPPING_FLAT)} and free on orders over ${formatPrice(FREE_SHIPPING_THRESHOLD)}. Every sign ships in protective foam packaging with a mounting kit included.`,
+        a: `Shipping is a flat ${formatPrice(shippingFlat())} and free on orders over ${formatPrice(freeShippingThreshold())}. Every sign ships in protective foam packaging with a mounting kit included.`,
       },
       {
         q: "How long does production take?",

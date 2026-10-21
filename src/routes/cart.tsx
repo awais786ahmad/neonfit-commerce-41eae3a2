@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { NeonCanvas } from "@/components/NeonCanvas";
 import { PageFade } from "@/components/Reveal";
 import { getTier } from "@/lib/neon/catalog";
-import { COUPON_CODES, formatPrice, shippingFor } from "@/lib/neon/pricing";
+import { couponPercent, formatPrice, shippingFor } from "@/lib/neon/pricing";
 import { clearCart, removeFromCart, setCoupon, updateCartQty, useCart, useCoupon } from "@/lib/store";
 
 export const Route = createFileRoute("/cart")({
@@ -32,7 +32,7 @@ function Cart() {
   const [code, setCode] = useState("");
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const discountPct = coupon ? (COUPON_CODES[coupon] ?? 0) : 0;
+  const discountPct = couponPercent(coupon);
   const discount = Math.round(subtotal * discountPct);
   const shipping = shippingFor(subtotal - discount);
   const total = subtotal - discount + shipping;
@@ -40,12 +40,13 @@ function Cart() {
   function applyCoupon() {
     const normalized = code.trim().toUpperCase();
     if (!normalized) return;
-    if (!COUPON_CODES[normalized]) {
+    const pct = couponPercent(normalized);
+    if (!pct) {
       toast.error("Invalid coupon code");
       return;
     }
     setCoupon(normalized);
-    toast.success(`Coupon ${normalized} applied — ${Math.round(COUPON_CODES[normalized]! * 100)}% off`);
+    toast.success(`Coupon ${normalized} applied — ${Math.round(pct * 100)}% off`);
     setCode("");
   }
 
