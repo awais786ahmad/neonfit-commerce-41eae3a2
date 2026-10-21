@@ -28,13 +28,6 @@ import { Label } from "@/components/ui/label";
 import { NeonCanvas } from "@/components/NeonCanvas";
 import { PageFade } from "@/components/Reveal";
 import {
-  ACCESSORIES,
-  BACKBOARDS,
-  BACKING_COLORS,
-  NEON_COLORS,
-  NEON_FONTS,
-  NEON_SHAPES,
-  SIZE_TIERS,
   SCENES,
   cloneDesign,
   makeShapeElement,
@@ -42,6 +35,15 @@ import {
   starterDesign,
   uid,
 } from "@/lib/neon/catalog";
+import {
+  useAccessories,
+  useBackingColors,
+  useBackboards,
+  useColors,
+  useFonts,
+  useShapes,
+  useTiers,
+} from "@/lib/admin";
 import { designToCartItem } from "@/lib/neon/cart";
 import { formatPrice, priceDesign } from "@/lib/neon/pricing";
 import { getTemplate, instantiateTemplate } from "@/lib/neon/templates";
@@ -113,6 +115,14 @@ function Editor() {
 
   const selected = design.elements.find((e) => e.id === selectedId) ?? null;
   const price = priceDesign(design);
+  // Editor options come from the admin-managed catalog (Story F)
+  const fonts = useFonts();
+  const colors = useColors();
+  const shapes = useShapes();
+  const tiers = useTiers();
+  const boards = useBackboards();
+  const backings = useBackingColors();
+  const accessories = useAccessories();
 
   // Load the design a URL param points at, once per param value
   useEffect(() => {
@@ -337,7 +347,7 @@ function Editor() {
               <div>
                 <p className="text-sm font-semibold text-foreground">Add shape</p>
                 <div className="mt-2 grid grid-cols-4 gap-2">
-                  {NEON_SHAPES.map((s) => (
+                  {shapes.map((s) => (
                     <button
                       key={s.id}
                       title={s.name}
@@ -412,7 +422,7 @@ function Editor() {
                   <div>
                     <p className="text-sm font-semibold text-foreground">Neon color</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {NEON_COLORS.map((c) => (
+                      {colors.map((c) => (
                         <button
                           key={c.id}
                           title={c.name}
@@ -432,7 +442,7 @@ function Editor() {
                     <div>
                       <p className="text-sm font-semibold text-foreground">Font</p>
                       <div className="mt-2 grid grid-cols-2 gap-2">
-                        {NEON_FONTS.map((f) => (
+                        {fonts.map((f) => (
                           <button
                             key={f.id}
                             onClick={() => onElementChange(selected.id, { fontId: f.id })}
@@ -481,7 +491,7 @@ function Editor() {
               <div>
                 <p className="text-sm font-semibold text-foreground">Size</p>
                 <div className="mt-2 grid grid-cols-2 gap-2">
-                  {SIZE_TIERS.map((t) => (
+                  {tiers.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => update((d) => ({ ...d, tierId: t.id }))}
@@ -500,7 +510,7 @@ function Editor() {
               <div>
                 <p className="text-sm font-semibold text-foreground">Backboard</p>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {BACKBOARDS.map((b) => (
+                  {boards.map((b) => (
                     <button
                       key={b.id}
                       onClick={() => update((d) => ({ ...d, backboardId: b.id }))}
@@ -519,7 +529,7 @@ function Editor() {
               <div>
                 <p className="text-sm font-semibold text-foreground">Backing finish</p>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {BACKING_COLORS.map((c) => (
+                  {backings.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => update((d) => ({ ...d, backingColorId: c.id }))}
@@ -556,7 +566,7 @@ function Editor() {
               <div>
                 <p className="text-sm font-semibold text-foreground">Accessories</p>
                 <div className="mt-2 space-y-2">
-                  {ACCESSORIES.map((a) => {
+                  {accessories.map((a) => {
                     const checked = design.accessories.includes(a.id);
                     return (
                       <label

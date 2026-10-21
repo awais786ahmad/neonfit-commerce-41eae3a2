@@ -12,7 +12,8 @@ import { toast } from "sonner";
 import { Check, ChevronRight, PencilRuler, ShoppingBag, Sparkles, Truck } from "lucide-react";
 
 import { NeonCanvas } from "@/components/NeonCanvas";
-import { BACKBOARDS, SIZE_TIERS, cloneDesign, getTier } from "@/lib/neon/catalog";
+import { cloneDesign, getTier } from "@/lib/neon/catalog";
+import { useBackboards, useTiers } from "@/lib/admin";
 import { designToCartItem } from "@/lib/neon/cart";
 import { formatPrice, priceDesign } from "@/lib/neon/pricing";
 import { getTemplate, instantiateTemplate } from "@/lib/neon/templates";
@@ -59,6 +60,8 @@ function ProductDetail() {
   const [design, setDesign] = useState<NeonDesign>(() => instantiateTemplate(template));
   const price = priceDesign(design);
   const tier = getTier(design.tierId);
+  const tiers = useTiers();
+  const boards = useBackboards();
 
   // If the URL changes to another design, reset the working copy
   useEffect(() => {
@@ -122,7 +125,7 @@ function ProductDetail() {
           <div className="mt-8">
             <p className="text-sm font-semibold text-foreground">Size</p>
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {SIZE_TIERS.map((t) => (
+              {tiers.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => setDesign((d) => ({ ...d, tierId: t.id }))}
@@ -142,7 +145,7 @@ function ProductDetail() {
           <div className="mt-6">
             <p className="text-sm font-semibold text-foreground">Backboard</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {BACKBOARDS.map((b) => (
+              {boards.map((b) => (
                 <button
                   key={b.id}
                   onClick={() => setDesign((d) => ({ ...d, backboardId: b.id }))}
