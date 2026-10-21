@@ -191,6 +191,28 @@ export function useAdminTemplates(): AdminTemplateEntry[] {
   return adminTemplateStore.useStore();
 }
 
+/** Slugs of built-in templates hidden from customers by the admin. */
+export const builtinDisabledStore = createStore<string[]>("nf_admin_disabled_templates", []);
+
+export function setBuiltinTemplateEnabled(slug: string, enabled: boolean) {
+  const disabled = builtinDisabledStore.read();
+  builtinDisabledStore.write(
+    enabled ? disabled.filter((s) => s !== slug) : disabled.includes(slug) ? disabled : [...disabled, slug],
+  );
+}
+
+/** Production stages an order moves through (Story H). */
+export const PRODUCTION_STAGES = [
+  "Order Placed",
+  "Artwork Review",
+  "Awaiting Approval",
+  "In Production",
+  "Quality Check",
+  "Ready to Ship",
+  "Shipped",
+  "Delivered",
+] as const;
+
 /* ================= Materials & inventory (Story G) ================= */
 
 export interface Material {

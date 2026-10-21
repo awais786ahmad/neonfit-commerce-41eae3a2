@@ -1,6 +1,6 @@
-import type { DesignElement } from "./types";
-import type { NeonDesign } from "./types";
+import type { DesignElement, NeonDesign } from "./types";
 import { cloneDesign, makeShapeElement, makeTextElement } from "./catalog";
+import { adminTemplateStore, builtinDisabledStore } from "../admin";
 
 export interface Template {
   slug: string;
@@ -161,13 +161,31 @@ function buildTemplates(): Template[] {
   ];
 }
 
-// Templates are built lazily: element ids use Math.random(), which is
+// Built-in templates are built lazily: element ids use Math.random(), which is
 // disallowed in Cloudflare Workers global scope at module evaluation.
 let cached: Template[] | null = null;
 
-export function allTemplates(): Template[] {
+/** Built-in templates, minus any the admin has disabled. */
+function builtinTemplates(): Template[] {
   if (!cached) cached = buildTemplates();
-  return cached;
+  const disabled = builtinDisabledStore.read();
+  return disabled.length ? cached.filter((t) => !disabled.includes(t.slug)) : cached;
+}
+
+/** All customer-facing templates: admin-created designs first, then built-ins. */
+export function allTemplates(): Template[] {
+  const custom = adminTemplateStore
+    .read()
+    .filter((e) => e.enabled)
+    .map((e) => ({ slug: e.slug, name: e.name, category: e.category, blurb: e.blurb, design: e.design }));
+  return [...custom, ...builtinTemplates()];
+}
+
+/** Category filter list including any categories added by admin templates. */
+export function allCategories(): string[] {
+  const seen = new Set<string>(TEMPLATE_CATEGORIES.filter((c) => c !== "All"));
+  for (const t of allTemplates()) seen.add(t.category);
+  return ["All", ...seen];
 }
 
 export function getTemplate(slug: string): Template | undefined {
